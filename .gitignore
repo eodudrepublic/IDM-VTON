@@ -1,0 +1,20 @@
+# Local caches and generated build output
+.hf_cache/
+build/
+*.egg-info/
+__pycache__/
+*.pyc
+api_outputs/
+
+# Model checkpoints and downloaded weights
+ckpt/
+*.ckpt
+*.pt
+*.pth
+*.pkl
+*.onnx
+*.safetensors
+*.bin
+
+# Runtime logs and temporary outputs
+*.log

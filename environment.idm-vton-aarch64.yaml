@@ -1,0 +1,43 @@
+name: idm-vton
+channels:
+  - defaults
+dependencies:
+  - python=3.12
+  - pip
+  - pip:
+      # The upstream environment pins PyTorch 2.0.1 + CUDA 11.8 for linux-64.
+      # This workstation is linux-aarch64 with NVIDIA GB10, so use the local
+      # CUDA 13 capable PyTorch wheels instead.
+      - torch==2.12.0
+      - torchvision==0.27.0
+      - accelerate==0.25.0
+      - torchmetrics==1.2.1
+      - tqdm==4.66.1
+      - transformers==4.36.2
+      - diffusers==0.25.0
+      - huggingface-hub==0.20.3
+      - tokenizers==0.15.2
+      - safetensors>=0.4.1
+      - einops==0.7.0
+      - numpy==1.26.4
+      - scipy==1.11.4
+      - opencv-python
+      - gradio==4.24.0
+      - fastapi==0.110.3
+      - starlette==0.37.2
+      - pydantic==2.6.4
+      - pydantic-core==2.16.3
+      - fvcore
+      - cloudpickle
+      - omegaconf
+      - pycocotools
+      - basicsr
+      - av
+      - onnxruntime==1.26.0
+      - matplotlib
+      - termcolor
+      - yacs
+      - tabulate
+      - tensorboard
+      - pydot
+      - future

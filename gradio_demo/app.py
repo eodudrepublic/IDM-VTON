@@ -1,5 +1,10 @@
 import sys
-sys.path.append('./')
+from pathlib import Path
+
+DEMO_ROOT = Path(__file__).resolve().parent
+PROJECT_ROOT = DEMO_ROOT.parents[0]
+sys.path.insert(0, str(PROJECT_ROOT))
+sys.path.insert(0, str(DEMO_ROOT))
 from PIL import Image
 import gradio as gr
 from src.tryon_pipeline import StableDiffusionXLInpaintPipeline as TryonPipeline
@@ -26,7 +31,8 @@ from preprocess.openpose.run_openpose import OpenPose
 from detectron2.data.detection_utils import convert_PIL_to_numpy,_apply_exif_orientation
 from torchvision.transforms.functional import to_pil_image
 
-device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
+device = os.environ.get("IDM_VTON_DEVICE") or ('cuda:0' if torch.cuda.is_available() else 'cpu')
+densepose_device = 'cuda' if device.startswith('cuda') else 'cpu'
 
 def pil_to_binary_mask(pil_image, threshold=0):
     np_image = np.array(pil_image)
@@ -42,7 +48,7 @@ def pil_to_binary_mask(pil_image, threshold=0):
     return output_mask
 
 
-base_path = 'yisol/IDM-VTON'
+base_path = os.environ.get('IDM_VTON_MODEL', 'yisol/IDM-VTON')
 example_path = os.path.join(os.path.dirname(__file__), 'example')
 
 unet = UNet2DConditionModel.from_pretrained(
@@ -165,7 +171,7 @@ def start_tryon(dict,garm_img,garment_des,is_checked,is_checked_crop,denoise_ste
      
     
 
-    args = apply_net.create_argument_parser().parse_args(('show', './configs/densepose_rcnn_R_50_FPN_s1x.yaml', './ckpt/densepose/model_final_162be9.pkl', 'dp_segm', '-v', '--opts', 'MODEL.DEVICE', 'cuda'))
+    args = apply_net.create_argument_parser().parse_args(('show', './configs/densepose_rcnn_R_50_FPN_s1x.yaml', './ckpt/densepose/model_final_162be9.pkl', 'dp_segm', '-v', '--opts', 'MODEL.DEVICE', densepose_device))
     # verbosity = getattr(args, "verbosity", None)
     pose_img = args.func(args,human_img_arg)    
     pose_img = pose_img[:,:,::-1]    
@@ -309,5 +315,17 @@ with image_blocks as demo:
             
 
 
-image_blocks.launch()
+def env_flag(name, default=False):
+    value = os.environ.get(name)
+    if value is None:
+        return default
+    return value.lower() in {"1", "true", "yes", "on"}
+
+
+if __name__ == "__main__":
+    image_blocks.launch(
+        server_name=os.environ.get("IDM_VTON_HOST", "127.0.0.1"),
+        server_port=int(os.environ.get("IDM_VTON_PORT", "7860")),
+        share=env_flag("IDM_VTON_SHARE"),
+    )
 
