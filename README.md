@@ -75,14 +75,25 @@ api_outputs/
 원본 `environment.yaml`은 `linux-64`, Python 3.10, PyTorch 2.0.1, CUDA 11.8 기준입니다. 이 포크는 `linux-aarch64`와 NVIDIA GB10/CUDA 13.0 환경에서 준비했기 때문에 별도 환경 파일을 사용합니다.
 
 ```bash
-conda env create -f environment.idm-vton-aarch64.yaml
-conda activate idm-vton
+conda env create -p $PWD/.conda/idm-vton -f environment.idm-vton-aarch64.yaml
+conda activate $PWD/.conda/idm-vton
 ```
 
 이미 환경이 만들어져 있다면 다음만 실행합니다.
 
 ```bash
-conda activate idm-vton
+conda activate $PWD/.conda/idm-vton
+```
+
+전용 환경은 프로젝트 내부 `.conda/idm-vton`에 생성합니다. 다른 파트(`/vlm` 등)의 Python 환경과 섞이지 않도록 `PYTHONNOUSERSITE=1`을 사용합니다.
+
+```bash
+conda env config vars set -p $PWD/.conda/idm-vton \
+  PYTHONNOUSERSITE=1 \
+  HF_HOME=$PWD/.hf_cache \
+  PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+conda deactivate
+conda activate $PWD/.conda/idm-vton
 ```
 
 Hugging Face 캐시는 프로젝트 내부에 두는 것을 기준으로 합니다.
@@ -146,7 +157,7 @@ python scripts/check_install.py
 API 서버 실행 명령은 다음과 같습니다.
 
 ```bash
-conda activate idm-vton
+conda activate $PWD/.conda/idm-vton
 export HF_HOME=$PWD/.hf_cache
 python -m uvicorn idm_vton_api.server:app --host 127.0.0.1 --port 7861
 ```
@@ -213,7 +224,7 @@ API 응답에서는 다음 경로 형태로 결과 파일 URL을 반환합니다
 검증용 데모는 원본 데모와 별도로 동작합니다. 단일 카테고리 합성과 상의/하의 outfit 합성 전략을 비교하기 위해 사용합니다.
 
 ```bash
-conda activate idm-vton
+conda activate $PWD/.conda/idm-vton
 export HF_HOME=$PWD/.hf_cache
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 python demo_outfit.py --host 127.0.0.1 --port 7862
@@ -245,7 +256,7 @@ Outfit 데모는 다음 전략을 지원합니다.
 원본 상의 중심 Gradio 데모도 유지되어 있습니다.
 
 ```bash
-conda activate idm-vton
+conda activate $PWD/.conda/idm-vton
 export HF_HOME=$PWD/.hf_cache
 python demo.py --host 127.0.0.1 --port 7860
 ```

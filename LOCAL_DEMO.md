@@ -6,7 +6,7 @@
 - Machine platform: `linux-aarch64`
 - GPU: NVIDIA GB10, driver CUDA capability reported by `nvidia-smi` as CUDA 13.0
 - Base Python before setup: Anaconda Python 3.13.9
-- Isolated env created: `idm-vton`
+- Isolated env created: `IDM-VTON/.conda/idm-vton`
 
 The upstream `environment.yaml` targets `linux-64` with Python 3.10 and PyTorch 2.0.1 + CUDA 11.8. This machine is ARM64/GB10, so the local env uses Python 3.12 and PyTorch/torchvision CUDA 13 wheels instead. `torchaudio` was omitted because no matching ARM64 `2.12.0` wheel is available and the Gradio demo does not use it.
 
@@ -14,10 +14,10 @@ The upstream `environment.yaml` targets `linux-64` with Python 3.10 and PyTorch 
 
 ```bash
 cd /home/eslab/Team25_generative_model/IDM-VTON
-conda activate idm-vton
+conda activate $PWD/.conda/idm-vton
 ```
 
-The env is configured with `PYTHONNOUSERSITE=1` so it does not load packages from `~/.local`.
+The env is configured with `PYTHONNOUSERSITE=1` so it does not load packages from `~/.local`. Use the project-local prefix environment at `.conda/idm-vton`, not the global `~/anaconda3/envs/idm-vton` environment.
 
 Demo preprocessing checkpoints are downloaded under `ckpt/`:
 
@@ -37,7 +37,7 @@ Model cache is local to the project when launched with `HF_HOME=$PWD/.hf_cache`.
 
 ```bash
 cd /home/eslab/Team25_generative_model/IDM-VTON
-conda activate idm-vton
+conda activate $PWD/.conda/idm-vton
 python scripts/check_install.py
 ```
 
@@ -55,7 +55,7 @@ Local-only:
 
 ```bash
 cd /home/eslab/Team25_generative_model/IDM-VTON
-conda activate idm-vton
+conda activate $PWD/.conda/idm-vton
 export HF_HOME=$PWD/.hf_cache
 python demo.py --host 127.0.0.1 --port 7860
 ```

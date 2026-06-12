@@ -23,11 +23,11 @@ from idm_vton_api.pipeline import IDMVTONService
 NETWORK_LOG_JS = """
 () => {
   if (window.__idmVtonNetworkLoggerInstalled) {
-    console.log("[IDM-VTON 7862][browser] network logger already installed");
+    console.log("[IDM-VTON 7860][browser] network logger already installed");
     return;
   }
   window.__idmVtonNetworkLoggerInstalled = true;
-  console.log("[IDM-VTON 7862][browser] network logger installed");
+  console.log("[IDM-VTON 7860][browser] network logger installed");
 
   const interesting = (url) => {
     const text = String(url || "");
@@ -41,17 +41,17 @@ NETWORK_LOG_JS = """
     const method = (args[1] && args[1].method) || (raw && raw.method) || "GET";
     const t0 = performance.now();
     if (interesting(url)) {
-      console.log(`[IDM-VTON 7862][fetch:start] ${method} ${url}`);
+      console.log(`[IDM-VTON 7860][fetch:start] ${method} ${url}`);
     }
     try {
       const response = await originalFetch(...args);
       if (interesting(url)) {
-        console.log(`[IDM-VTON 7862][fetch:done] ${method} ${url} status=${response.status} duration_ms=${Math.round(performance.now() - t0)}`);
+        console.log(`[IDM-VTON 7860][fetch:done] ${method} ${url} status=${response.status} duration_ms=${Math.round(performance.now() - t0)}`);
       }
       return response;
     } catch (error) {
       if (interesting(url)) {
-        console.error(`[IDM-VTON 7862][fetch:error] ${method} ${url}`, error);
+        console.error(`[IDM-VTON 7860][fetch:error] ${method} ${url}`, error);
       }
       throw error;
     }
@@ -60,16 +60,16 @@ NETWORK_LOG_JS = """
   const OriginalEventSource = window.EventSource;
   if (OriginalEventSource) {
     window.EventSource = function(url, config) {
-      console.log(`[IDM-VTON 7862][eventsource:create] ${url}`);
+      console.log(`[IDM-VTON 7860][eventsource:create] ${url}`);
       const source = new OriginalEventSource(url, config);
-      source.addEventListener("open", () => console.log(`[IDM-VTON 7862][eventsource:open] ${url}`));
+      source.addEventListener("open", () => console.log(`[IDM-VTON 7860][eventsource:open] ${url}`));
       source.addEventListener("message", (event) => {
         const data = String(event.data || "");
         if (data.includes("process_starts") || data.includes("process_completed") || data.includes("estimation") || data.includes("progress") || data.includes("msg")) {
-          console.log(`[IDM-VTON 7862][eventsource:message] ${url}`, data.slice(0, 500));
+          console.log(`[IDM-VTON 7860][eventsource:message] ${url}`, data.slice(0, 500));
         }
       });
-      source.addEventListener("error", (event) => console.warn(`[IDM-VTON 7862][eventsource:error] ${url}`, event));
+      source.addEventListener("error", (event) => console.warn(`[IDM-VTON 7860][eventsource:error] ${url}`, event));
       return source;
     };
     window.EventSource.prototype = OriginalEventSource.prototype;
@@ -79,7 +79,7 @@ NETWORK_LOG_JS = """
 
 OUTFIT_CLICK_JS = """
 (person, upper, lower, upper_desc, lower_desc, strategy, lower_mask_refinement, lower_mask_expand, auto_crop, steps, seed) => {
-  console.log("[IDM-VTON 7862][ui] Try upper+lower clicked", {
+  console.log("[IDM-VTON 7860][ui] Try upper+lower clicked", {
     hasPerson: Boolean(person),
     hasUpper: Boolean(upper),
     hasLower: Boolean(lower),
@@ -92,14 +92,14 @@ OUTFIT_CLICK_JS = """
     steps,
     seed
   });
-  console.log("[IDM-VTON 7862][ui] submitting Gradio queue request for /tryon_outfit");
+  console.log("[IDM-VTON 7860][ui] submitting Gradio queue request for /tryon_outfit");
   return [person, upper, lower, upper_desc, lower_desc, strategy, lower_mask_refinement, lower_mask_expand, auto_crop, steps, seed];
 }
 """
 
 SINGLE_CLICK_JS = """
 (person, garment, desc, category, auto_crop, steps, seed) => {
-  console.log("[IDM-VTON 7862][ui] Try single garment clicked", {
+  console.log("[IDM-VTON 7860][ui] Try single garment clicked", {
     hasPerson: Boolean(person),
     hasGarment: Boolean(garment),
     desc,
@@ -108,14 +108,14 @@ SINGLE_CLICK_JS = """
     steps,
     seed
   });
-  console.log("[IDM-VTON 7862][ui] submitting Gradio queue request for /tryon_single_category");
+  console.log("[IDM-VTON 7860][ui] submitting Gradio queue request for /tryon_single_category");
   return [person, garment, desc, category, auto_crop, steps, seed];
 }
 """
 
 REPO_ROOT = Path(__file__).resolve().parent
 OUTPUT_ROOT = REPO_ROOT / "api_outputs" / "gradio_outfit"
-LOG_PATH = Path("/tmp/idm_vton_outfit_demo_7862.log")
+LOG_PATH = Path("/tmp/idm_vton_outfit_demo_7860.log")
 
 _service = None
 _service_loaded_at = None
@@ -155,7 +155,7 @@ patch_gradio_filedata_schema()
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--host", default="127.0.0.1")
-    parser.add_argument("--port", type=int, default=7862)
+    parser.add_argument("--port", type=int, default=7860)
     parser.add_argument("--share", action="store_true")
     parser.add_argument("--model", default="yisol/IDM-VTON")
     parser.add_argument("--device", default="")
@@ -191,7 +191,7 @@ def model_status_text(note: str = "") -> str:
 
 
 def log_event(job_id: str, stage: str, message: str = "") -> None:
-    print(f"[IDM-VTON-7862][{now()}][pid={os.getpid()}][job={job_id}][stage={stage}] {message} {cuda_state()}", flush=True)
+    print(f"[IDM-VTON-7860][{now()}][pid={os.getpid()}][job={job_id}][stage={stage}] {message} {cuda_state()}", flush=True)
 
 
 def status_text(job_id: str, stage: str, message: str) -> str:

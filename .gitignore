@@ -18,3 +18,5 @@ ckpt/
 
 # Runtime logs and temporary outputs
 *.log
+.conda/
+.venv/
